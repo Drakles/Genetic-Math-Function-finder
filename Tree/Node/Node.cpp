@@ -15,7 +15,6 @@ Node::Node(const std::string &value, Node *parent){
 }
 
 Node::Node(){
-    this->value="";
     this->leftChild= nullptr;
     this->righChild = nullptr;
     this->parent = nullptr;
@@ -41,8 +40,8 @@ Node& Node::operator=(Node &otherNode) {
 }
 
 Node::~Node() {
-    delete leftChild;
-    delete righChild;
+    if(leftChild != nullptr) delete leftChild;
+    if(righChild != nullptr) delete righChild;
 }
 
 Node::Node(Node *node) {
@@ -74,8 +73,6 @@ Node::Node(const Node &node) {
 
     }
 }
-
-
 
 void Node::getNumberOfVariables(Node *node, int &quantityOfVars){
 

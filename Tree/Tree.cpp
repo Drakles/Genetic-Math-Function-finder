@@ -29,6 +29,8 @@ Tree::Tree(const Tree &tree) {
     this->root = new Node(*tree.root);
 }
 
+
+
 Tree::Tree(Node* root){
     this->root = new Node(root);
 }
@@ -409,25 +411,59 @@ void Tree::tryToReproduce(Tree *& partnerTree, vector<Tree *> &listOfTrees) {
     bool nodeReturned = false;
     if(generatedChance <= CHANCE_OF_REPRODUCE){
 
-        Node *child1(tryToFindSubTreeFromParent(root,generator,dis,nodeReturned));
-        Node *child2(tryToFindSubTreeFromParent(partnerTree->root,generator,dis,nodeReturned));
-        // robie kopie dzieci
-        Node *child3(child1);
-        Node *child4(child2);
+//        Node *child1(tryToFindSubTreeFromParent(root,generator,dis,nodeReturned));
+//        nodeReturned = false;
+//        Node *child2(tryToFindSubTreeFromParent(partnerTree->root,generator,dis,nodeReturned));
+//        // robie kopie dzieci
+//        Node *child3(child1);
+//        Node *child4(child2);
+//
+//        bool nodeAttached = false;
+//        // w child1 poszukaj losowo noda i podstaw tam child2
+//        reproduceTwoTrees(child1,child2,generator,dis,nodeAttached);
+//        // później na odwrót dla kopii
+//        nodeAttached = false;
+//        reproduceTwoTrees(child4,child3,generator,dis,nodeAttached);
 
-        bool nodeAttached = false;
-        // w child1 poszukaj losowo noda i podstaw tam child2
-        reproduceTwoTrees(child1,child2,generator,dis,nodeAttached);
-        // później na odwrót dla kopii
-        nodeAttached = false;
-        reproduceTwoTrees(child4,child3,generator,dis,nodeAttached);
+
+        Tree* cloneOfThisTree(this);
+        Tree* cloneOfPartnerTree(partnerTree);
+
+        Tree* secondCloneOfThisTree(this);
+        Tree* secondPartnerTree(partnerTree);
+        bool treeReproduced = false;
+        tryToChangeOneOfSubtreeForPartnerSubtree(cloneOfThisTree->root,cloneOfPartnerTree,generator,dis,treeReproduced);
+        treeReproduced = false;
+        tryToChangeOneOfSubtreeForPartnerSubtree(secondPartnerTree->root,secondCloneOfThisTree,generator,dis,treeReproduced);
+
+
         //dodaj dzieci do listy
-        listOfTrees.push_back(new Tree(child1));
+        listOfTrees.push_back(cloneOfThisTree);
         // i wylicz nowe drzewka
-        listOfTrees.at(listOfTrees.size()-1)->computeTreeAndSaveResult(listOfTrees.at(listOfTrees.size()-1)->getValuesOfVarsAndResultFromFile(FILE_PATH));
-        listOfTrees.push_back(new Tree(child4));
-        listOfTrees.at(listOfTrees.size()-1)->computeTreeAndSaveResult(listOfTrees.at(listOfTrees.size()-1)->getValuesOfVarsAndResultFromFile(FILE_PATH));
+        listOfTrees.at(listOfTrees.size()-1)
+                ->computeTreeAndSaveResult(listOfTrees.at(listOfTrees.size()-1)->getValuesOfVarsAndResultFromFile(FILE_PATH));
+        // i to samo dla drugiego drzewka
+        listOfTrees.push_back(secondPartnerTree);
+        listOfTrees.at(listOfTrees.size()-1)
+                ->computeTreeAndSaveResult(listOfTrees.at(listOfTrees.size()-1)->getValuesOfVarsAndResultFromFile(FILE_PATH));
 
+    }
+}
+
+
+void Tree::tryToChangeOneOfSubtreeForPartnerSubtree(Node *& node,Tree *& partnerTree, std::mt19937 generator, std::uniform_real_distribution<double> dis,
+                                              bool &treeReproduced){
+    int totalChanceOfReproduce = this->getNumberOfNodesAndLeafses();
+    double chanceOfOneSubtreeToReproduce = 1/(double)totalChanceOfReproduce;
+    double generatedChance = dis(generator);
+
+    if(generatedChance < chanceOfOneSubtreeToReproduce && !treeReproduced && averageResult != 0){
+        delete node;
+        node = partnerTree->root;
+        treeReproduced = true;
+    }else{
+        if(node->leftChild != nullptr) tryToChangeOneOfSubtreeForPartnerSubtree(node->leftChild,partnerTree,generator,dis,treeReproduced);
+        if(node->righChild != nullptr) tryToChangeOneOfSubtreeForPartnerSubtree(node->righChild,partnerTree,generator,dis,treeReproduced);
     }
 }
 
@@ -451,31 +487,33 @@ Node * Tree::tryToFindSubTreeFromParent(Node*& node,std::mt19937 generator,
 
 }
 
-void Tree::reproduceTwoTrees(Node *& node, Node *& nodeToAttached,std::mt19937 generator,
-                             std::uniform_real_distribution<double> dis, bool &nodeAttached ){
-    if(&node != nullptr || node != nullptr || !node->value.compare("")) {
-        int totalChance = this->getNumberOfNodesAndLeafses();
-        double chanceOfOneNodeorLeafToMutate = 1 / (double) totalChance;
-        double generatedChance = dis(generator)/100;
-
-        if (generatedChance < chanceOfOneNodeorLeafToMutate && !nodeAttached && averageResult != 0) {
-
-            // powinna być policzona ilosc zmiennych w node i ilosc zmiennych w nodeToAttached żeby suma pozostała taka sama
-            // ale jest późno więc będzie na pałe
-            // TO CHANGE IN NEXT RELEASE
-
-            //chyba tego żałuje
-            delete node;
-            node = new Node(nodeToAttached);
-            nodeAttached = true;
-        } else {
-            if (node->righChild != nullptr)
-                reproduceTwoTrees(node->righChild, nodeToAttached, generator, dis, nodeAttached);
-            if (node->leftChild != nullptr)
-                reproduceTwoTrees(node->leftChild, nodeToAttached, generator, dis, nodeAttached);
-        }
-    }
-}
+//void Tree::reproduceTwoTrees(Node *& node, Node *& nodeToAttached,std::mt19937 generator,
+//                             std::uniform_real_distribution<double> dis, bool &nodeAttached ){
+//    if((&node != nullptr || node != nullptr || !node->value.compare("")) && node != nodeToAttached) {
+//        int totalChance = this->getNumberOfNodesAndLeafses();
+//        double chanceOfOneNodeorLeafToMutate = 1 / (double) totalChance;
+//        double generatedChance = dis(generator)/100;
+//
+//        if (generatedChance < chanceOfOneNodeorLeafToMutate && !nodeAttached && averageResult != 0) {
+//
+//            // powinna być policzona ilosc zmiennych w node i ilosc zmiennych w nodeToAttached żeby suma pozostała taka sama
+//            // ale jest późno więc nie
+//            // TO CHANGE IN NEXT RELEASE
+//
+//            //chyba tego żałuje
+//            delete node;
+//            node = new Node(nodeToAttached);
+//            nodeAttached = true;
+//        } else {
+//            if(!node->value.compare("")) {
+//                if (node->righChild != nullptr)
+//                    reproduceTwoTrees(node->righChild, nodeToAttached, generator, dis, nodeAttached);
+//                if (node->leftChild != nullptr)
+//                    reproduceTwoTrees(node->leftChild, nodeToAttached, generator, dis, nodeAttached);
+//            }
+//        }
+//    }
+//}
 
 /* PRINTING FUNCTIONS ------------------------------------------------------------------------------------------------*/
 

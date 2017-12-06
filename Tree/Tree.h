@@ -105,6 +105,9 @@ private:
                            bool &nodeAttached);
     void printInOrder(Node *node, string &output);
 
+    void
+    tryToChangeOneOfSubtreeForPartnerSubtree(Node *&node,Tree *&partnerTree, mt19937 generator, uniform_real_distribution<double> dis,
+                                             bool &treeReproduced);
 };
 
 

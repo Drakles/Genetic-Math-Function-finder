@@ -9,6 +9,10 @@
 #include "Generator/ExpressionGenerator.h"
 #include "Tree/Tree.h"
 
+
+const int NUMBER_OF_GENERATIONS = 10;
+
+
 class GodOfTheTrees {
 
     friend class Tree;
