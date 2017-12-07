@@ -22,8 +22,8 @@ public:
     Node & operator=(Node &otherNode);
     ~Node();
     int getNumberOfVariables();
-private:
     std::string value;
+private:
     Node *parent;
     Node *righChild;
 

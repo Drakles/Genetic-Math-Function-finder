@@ -6,12 +6,13 @@
 #define LISTA4_GODOFTHETREES_H
 
 
-#include "Generator/ExpressionGenerator.h"
-#include "Tree/Tree.h"
+#include "../Generator/ExpressionGenerator.h"
+#include "../Tree/Tree.h"
 
 
-const int NUMBER_OF_GENERATIONS = 10;
-
+const int NUMBER_OF_GENERATIONS = 5;
+const int MINIMAL_NUMBER_OF_TREES = 20;
+const int INITIAL_POPULATION = 1000;
 
 class GodOfTheTrees {
 

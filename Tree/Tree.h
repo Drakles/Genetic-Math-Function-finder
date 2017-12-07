@@ -78,6 +78,7 @@ public:
     void tryToModyfie(ExpressionGenerator& gen,vector <Tree *>& listOfTrees);
     void tryToReproduce(Tree *& partnerTree, vector <Tree *>& listOfTrees);
     string printInOrder();
+    void startMutateWithSameStruct();
 
     double averageResult;
 private:
@@ -98,16 +99,11 @@ private:
     void mutateTree(Node *&node, bool &treeIsMutated,
                     std::__1::mersenne_twister_engine<uint_fast32_t, 32, 624, 397, 31, 0x9908b0df, 11, 0xffffffff, 7, 0x9d2c5680, 15, 0xefc60000, 18, 1812433253> generator,
                     std::__1::uniform_real_distribution<double> dis,ExpressionGenerator& gen,vector <Tree *>& listOfTrees);
-    Node *
-    tryToFindSubTreeFromParent(Node *&node, mt19937 generator, uniform_real_distribution<double> dis, bool &nodeReturned);
-
-    void reproduceTwoTrees(Node *&node, Node *&nodeToAttached, mt19937 generator, uniform_real_distribution<double> dis,
-                           bool &nodeAttached);
+    Node * tryToFindSubTreeFromParent(Node *&node, mt19937 generator, uniform_real_distribution<double> dis, bool &nodeReturned);
     void printInOrder(Node *node, string &output);
-
-    void
-    tryToChangeOneOfSubtreeForPartnerSubtree(Node *&node,Tree *&partnerTree, mt19937 generator, uniform_real_distribution<double> dis,
-                                             bool &treeReproduced);
+    void tryToChangeOneOfSubtreeForPartnerSubtree(Node *&node,Tree *&partnerTree, mt19937 generator,
+                                                  uniform_real_distribution<double> dis, bool &treeReproduced);
+    void vMutateSaveStruct(Node *&node, mt19937 generator, uniform_real_distribution<double> dis);
 };
 
 

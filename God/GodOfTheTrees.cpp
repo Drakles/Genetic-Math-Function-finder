@@ -11,25 +11,22 @@ bool compareTree(Tree* a,Tree* b){
 int GodOfTheTrees::doTheGoding() {
 
     // INITIALIZATION
-    exprs = exprGen.generateSetOfExprs(100000,HOW_MUCH_VARIABLE);
+    exprs = exprGen.generateSetOfExprs(INITIAL_POPULATION,HOW_MUCH_VARIABLE);
     while(!exprs.empty()){
         listOfTrees.push_back(new Tree(exprs.front()));
         exprs.pop();
     }
     // EVALUATION
     for (int i = 0; i < listOfTrees.size() ; ++i) {
-//        cout << listOfTrees.at(i)->printAsTree() << endl;
         listOfTrees.at(i)->computeTreeAndSaveResult(listOfTrees.at(i)->getValuesOfVarsAndResultFromFile(FILE_PATH));
-//        cout << listOfTrees.at(i)->averageResult<<endl;
     }
     std::sort (listOfTrees.begin(), listOfTrees.end(),compareTree);
 
 
-    for (int m = 0; m < NUMBER_OF_GENERATIONS && !listOfTrees.size() < 20; ++m) {
+    for (int m = 0; m < NUMBER_OF_GENERATIONS && !listOfTrees.size() < MINIMAL_NUMBER_OF_TREES; ++m) {
 
         /* NATURAL SELECTION */
 
-//        cout << "usunąłem połowę populacji najsłabszych bo okazałem się złym bogiem" << endl;
         for (int j = (int)listOfTrees.size()-1; j < listOfTrees.size() ; ++j) {
             delete listOfTrees.at(j);
         }

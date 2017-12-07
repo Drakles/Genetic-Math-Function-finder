@@ -4,7 +4,7 @@
 
 #include "Tree.h"
 #include "../Generator/ExpressionGenerator.h"
-#include "../GodOfTheTrees.h"
+#include "../God/GodOfTheTrees.h"
 #include <iostream>
 #include <cmath>
 #include <fstream>
@@ -408,23 +408,7 @@ void Tree::tryToReproduce(Tree *& partnerTree, vector<Tree *> &listOfTrees) {
     std::uniform_real_distribution<double> dis(0, 100);
 
     double generatedChance = dis(generator);
-    bool nodeReturned = false;
     if(generatedChance <= CHANCE_OF_REPRODUCE){
-
-//        Node *child1(tryToFindSubTreeFromParent(root,generator,dis,nodeReturned));
-//        nodeReturned = false;
-//        Node *child2(tryToFindSubTreeFromParent(partnerTree->root,generator,dis,nodeReturned));
-//        // robie kopie dzieci
-//        Node *child3(child1);
-//        Node *child4(child2);
-//
-//        bool nodeAttached = false;
-//        // w child1 poszukaj losowo noda i podstaw tam child2
-//        reproduceTwoTrees(child1,child2,generator,dis,nodeAttached);
-//        // później na odwrót dla kopii
-//        nodeAttached = false;
-//        reproduceTwoTrees(child4,child3,generator,dis,nodeAttached);
-
 
         Tree* cloneOfThisTree(this);
         Tree* cloneOfPartnerTree(partnerTree);
@@ -435,7 +419,6 @@ void Tree::tryToReproduce(Tree *& partnerTree, vector<Tree *> &listOfTrees) {
         tryToChangeOneOfSubtreeForPartnerSubtree(cloneOfThisTree->root,cloneOfPartnerTree,generator,dis,treeReproduced);
         treeReproduced = false;
         tryToChangeOneOfSubtreeForPartnerSubtree(secondPartnerTree->root,secondCloneOfThisTree,generator,dis,treeReproduced);
-
 
         //dodaj dzieci do listy
         listOfTrees.push_back(cloneOfThisTree);
@@ -484,36 +467,106 @@ Node * Tree::tryToFindSubTreeFromParent(Node*& node,std::mt19937 generator,
             if (node->leftChild != nullptr) tryToFindSubTreeFromParent(node->leftChild, generator, dis, nodeReturned);
         }
     }
+}
+/* metoda na potrzeby modyfikacji
+void Tree::startMutateWithSameStruct(){
+    std::mt19937 generator (time(0));
+    std::uniform_real_distribution<double> dis(0, 10);
+
+    double generatedChance = dis(generator);
+
+    vMutateSaveStruct(this->root,generator,dis);
 
 }
 
-//void Tree::reproduceTwoTrees(Node *& node, Node *& nodeToAttached,std::mt19937 generator,
-//                             std::uniform_real_distribution<double> dis, bool &nodeAttached ){
-//    if((&node != nullptr || node != nullptr || !node->value.compare("")) && node != nodeToAttached) {
-//        int totalChance = this->getNumberOfNodesAndLeafses();
-//        double chanceOfOneNodeorLeafToMutate = 1 / (double) totalChance;
-//        double generatedChance = dis(generator)/100;
-//
-//        if (generatedChance < chanceOfOneNodeorLeafToMutate && !nodeAttached && averageResult != 0) {
-//
-//            // powinna być policzona ilosc zmiennych w node i ilosc zmiennych w nodeToAttached żeby suma pozostała taka sama
-//            // ale jest późno więc nie
-//            // TO CHANGE IN NEXT RELEASE
-//
-//            //chyba tego żałuje
-//            delete node;
-//            node = new Node(nodeToAttached);
-//            nodeAttached = true;
-//        } else {
-//            if(!node->value.compare("")) {
-//                if (node->righChild != nullptr)
-//                    reproduceTwoTrees(node->righChild, nodeToAttached, generator, dis, nodeAttached);
-//                if (node->leftChild != nullptr)
-//                    reproduceTwoTrees(node->leftChild, nodeToAttached, generator, dis, nodeAttached);
-//            }
-//        }
-//    }
-//}
+
+string genSinOrCos(string value){
+    if(value == "cos"){
+        return "sin";
+    }else return "cos";
+}
+
+string genOperatorButNotSinOrCos(double whatToGenerate,string value,std::mt19937 generator,
+                                 std::uniform_real_distribution<double> dis){
+
+    bool stringReturned = false;
+
+    while(!stringReturned) {
+        if (whatToGenerate < 2.5 && value != "*"){
+            stringReturned = true;
+            return "*";
+        }
+        if (2.5 <= whatToGenerate && whatToGenerate < 5 && value != "/"){
+            stringReturned = true;
+            return "/";
+        }
+        if (5 <= whatToGenerate && whatToGenerate < 7.5 && value != "+"){
+            stringReturned = true;
+            return "+";
+        }
+        if (7.5 <= whatToGenerate && value != "-"){
+            stringReturned = true;
+            return "-";
+        }
+        whatToGenerate = dis(generator);
+    }
+}
+
+string genVariable(double whatToGenerate,string value,std::mt19937 generator,
+                   std::uniform_real_distribution<double> dis){
+
+//    cout <<"whatToGenerate:"<<whatToGenerate<<endl;
+    whatToGenerate *= 10;
+
+    while(whatToGenerate > 122){
+        whatToGenerate--;
+    }
+    while(whatToGenerate < 97){
+        whatToGenerate++;
+    }
+//    cout <<"Teraz whatToGenerate:"<<whatToGenerate<<endl;
+    int generatedInFunctionNumber = (int)whatToGenerate;
+    char generatedVariable = (char)(generatedInFunctionNumber);
+    string genVarInString(1,generatedVariable);
+
+//    cout << "wyszło mi "<<genVarInString<<endl;
+    if(genVarInString == value){
+//        cout <<"jest taki sam"<<endl;
+        whatToGenerate += 1;
+        generatedInFunctionNumber = (int)whatToGenerate;
+        generatedVariable = (char)(generatedInFunctionNumber);
+        string genVarInString(1,generatedVariable);
+//        cout << "wiec zwracam "<<genVarInString<<endl;
+        return genVarInString;
+    }
+//    cout << "zwracam:"<<genVarInString<<endl;
+    return genVarInString;
+}
+
+double genNumber(string value,double whatToGenerate){
+    double number = stoi(value);
+    if(number == whatToGenerate){
+        return number/whatToGenerate;
+    }else return whatToGenerate;
+}
+
+void Tree::vMutateSaveStruct(Node *& node, std::mt19937 generator,
+                             std::uniform_real_distribution<double> dis){
+    if(node != nullptr) {
+        double generatedChance = dis(generator);
+        if (isOperatorSinOrCos(node->value)) {
+            node->value = genSinOrCos(node->value);
+        } else if (isOperator(node->value)) {
+            node->value = genOperatorButNotSinOrCos(generatedChance,node->value,generator,dis);
+        } else if (isNumber(node->value)) {
+            node->value = to_string(genNumber(node->value,generatedChance));
+        } else node->value = genVariable(generatedChance,node->value,generator,dis);
+
+        if(node->righChild != nullptr) vMutateSaveStruct(node->righChild,generator,dis);
+        if(node->leftChild != nullptr) vMutateSaveStruct(node->leftChild,generator,dis);
+    }
+}
+*/
 
 /* PRINTING FUNCTIONS ------------------------------------------------------------------------------------------------*/
 

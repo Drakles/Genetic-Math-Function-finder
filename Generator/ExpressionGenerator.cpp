@@ -38,12 +38,6 @@ string genVariable(double whatToGenerate, int minimumLevel){
     return genVarInString;
 }
 
-double ExpressionGenerator::generateRandomDoubleNumber(int rangeFrom,int rangeTo){
-    std::uniform_real_distribution<double> dis(rangeFrom, rangeTo);
-
-    return dis(generator);
-}
-
 queue < string > ExpressionGenerator::generateSetOfExprs(int quantityOfExpr, int howMuchVariables) {
 
     queue < string >queue;
